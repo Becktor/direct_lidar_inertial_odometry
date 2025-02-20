@@ -15,5 +15,6 @@ windows:
           - htop
       - shell_command:
           - ros2 bag play /data/slam_data/ros2/os1_128_01 --clock
+          #- ros2 bag play /data/slam_data/ros2/jsu-01-restamped --clock --read-ahead-queue-size 1000
       - shell_command:
           - echo "Run your commands here"

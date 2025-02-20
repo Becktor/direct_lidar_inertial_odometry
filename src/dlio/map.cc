@@ -13,6 +13,7 @@
 #include "dlio/map.h"
 #include "dlio/utils.h"
 
+//dlio::MapNode::MapNode(const rclcpp::NodeOptions & options): Node("dlio_map_node", options) {
 dlio::MapNode::MapNode(): Node("dlio_map_node") {
 
   this->getParams();

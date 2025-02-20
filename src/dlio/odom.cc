@@ -17,6 +17,7 @@
 
 #include "rclcpp/qos.hpp"
 
+//dlio::OdomNode::OdomNode(const rclcpp::NodeOptions & options) : Node("dlio_odom_node", options) {
 dlio::OdomNode::OdomNode() : Node("dlio_odom_node") {
 
   this->getParams();
