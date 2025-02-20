@@ -1,15 +1,19 @@
 session_name: dlio_session
 windows:
   - window_name: ros2_and_rviz
-    layout: main-horizontal
+    layout: tiled
     shell_command_before:
-      - "source /opt/ros/jazzy/setup.bash"
-      - "source /naisr2_ws/install/setup.bash"
+      - source /opt/ros/jazzy/setup.bash
+      - source /naisr2_ws/install/setup.bash
+      - export ROS_DOMAIN_ID=0
+      - export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - ros2 param set /use_sim_time true
     panes:
       - shell_command:
-          - "cd ~/ros2_ws"
-          - "ros2 launch direct_lidar_inertial_odometry dlio.launch.py"
+          - ros2 launch direct_lidar_inertial_odometry dlio.launch.py rviz:=true pointcloud_topic:=/os_cloud_node/points imu_topic:=/os_cloud_node/imu
       - shell_command:
-          - "rviz2 -d /naisr2_ws/src/direct_lidar_inertial_odometry/launch/dlio.rviz"
+          - htop
       - shell_command:
-          - "ros2 bag play /data/slam_data/ros2/os1_128_01"
+          - ros2 bag play /data/slam_data/ros2/os1_128_01 --clock
+      - shell_command:
+          - echo "Run your commands here"
