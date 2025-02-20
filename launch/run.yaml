@@ -1,0 +1,15 @@
+session_name: dlio_session
+windows:
+  - window_name: ros2_and_rviz
+    layout: main-horizontal
+    shell_command_before:
+      - "source /opt/ros/jazzy/setup.bash"
+      - "source /naisr2_ws/install/setup.bash"
+    panes:
+      - shell_command:
+          - "cd ~/ros2_ws"
+          - "ros2 launch direct_lidar_inertial_odometry dlio.launch.py"
+      - shell_command:
+          - "rviz2 -d /naisr2_ws/src/direct_lidar_inertial_odometry/launch/dlio.rviz"
+      - shell_command:
+          - "ros2 bag play /data/slam_data/ros2/os1_128_01"
