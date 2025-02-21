@@ -1,8 +1,7 @@
 # Use official ROS 2 Jazzy image as the base
-FROM ros:jazzy-perception
+FROM ros:humble-perception
 
 ARG PACKAGE_NAME=dlio
-ARG CONTAINER_NAME=naisr_dlio
 
 # Set non-interactive frontend to avoid prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -29,14 +28,15 @@ RUN echo ${PACKAGE_NAME} > /etc/debian_chroot
 RUN apt-get update && apt-get install -y \
     git \
     vim \
+    htop \
     tmux \
     tmuxp \
     python3-colcon-common-extensions \
     python3-colcon-clean \
     python3-rosdep \
     python3-vcstool \
-    ros-jazzy-rviz2 \
-    ros-jazzy-rqt* \
+    ros-humble-rviz2 \
+    ros-humble-rqt* \
     && rm -rf /var/lib/apt/lists/*
 
 # Ensure rosdep is initialized (should already be in the base image, but just in case)
@@ -52,17 +52,17 @@ COPY . /naisr2_ws/src/direct_lidar_inertial_odometry
 # Install ROS dependencies with APT cache
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    /bin/bash -c "source /opt/ros/jazzy/setup.bash && \
+    /bin/bash -c "source /opt/ros/humble/setup.bash && \
     rosdep install --from-paths src --ignore-src -r -y"
 
 # Build the workspace with colcon cache
 RUN --mount=type=cache,target=/naisr2_ws/build,sharing=locked \
-    /bin/bash -c "source /opt/ros/jazzy/setup.bash && \
+    /bin/bash -c "source /opt/ros/humble/setup.bash && \
     colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 
 # clear the workspace since we will mount it as a volume
 RUN rm -rf /naisr2_ws/src/direct_lidar_inertial_odometry
-
+RUN echo "rosdep install --from-paths src --ignore-src -r -y" >> /naisr2_ws/rosdep_install.sh
 RUN echo "colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo" >> /naisr2_ws/build_ws.sh
 
 # setup environment
@@ -76,9 +76,9 @@ RUN groupadd ${USERNAME} && \
     chmod 0440 /etc/sudoers.d/${USERNAME}
 
 # Copy and set the entrypoint from the dlio-docker subdirectory
-COPY docker/entrypoint.sh /entrypoint.sh
+COPY humble-docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 USER ${USERNAME}
-RUN echo "source /opt/ros/jazzy/setup.bash" >> /home/${USERNAME}/.bashrc
+RUN echo "source /opt/ros/humble/setup.bash" >> /home/${USERNAME}/.bashrc
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]

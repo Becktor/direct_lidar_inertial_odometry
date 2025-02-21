@@ -13,6 +13,7 @@ else
     CURRENT_GID=$(id -g "$USERNAME")
 
     echo "Changing Permissions."
+    echo "Current Username: $USERNAME"
     echo "Current UID and GID: $CURRENT_UID and $CURRENT_GID"
     echo "Desired UID and GID: $USER_UID and $USER_GID"
     
