@@ -69,7 +69,9 @@ RUN echo "colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWith
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
-ARG USERNAME=naisr
+# create with
+
+ARG USERNAME=jobe
 RUN groupadd ${USERNAME} && \
     useradd -m -g ${USERNAME} -s /bin/bash ${USERNAME} && \
     echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} && \

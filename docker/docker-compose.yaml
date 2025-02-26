@@ -2,21 +2,23 @@ services:
   dlio:
     image: naisr_dlio:v0.0.1
     container_name: naisr_dlio
-    hostname: naisr-learner
     network_mode: host
     build:
       context: ..  # Parent folder (direct_lidar_inertial_odometry repo)
       dockerfile: docker/Dockerfile
+      args:
+      - USER_UID=${UID}     # Pass host UID at runtime
+      - USER_GID=${GID}     # Pass host GID at runtime
     volumes:
       - ../:/naisr2_ws/src/direct_lidar_inertial_odometry  # Mount the repo at runtime
       - /tmp/.X11-unix:/tmp/.X11-unix  # For RViz GUI
-      - /data/slam_data:/data/slam_data  # For data storage
-      - ./tmux.conf:/home/naisr/.tmux.conf  # Custom tmux config
+      - /home/jobe/bags:/data/slam_data  # For data storage
+      - ./tmux.conf:/home/jobe/.tmux.conf  # Custom tmux config
     environment:
       - DISPLAY=${DISPLAY}  # Pass host display for RViz
       - ROS_DOMAIN_ID=0
       - USER_UID=${UID}     # Pass host UID at runtime
       - USER_GID=${GID}     # Pass host GID at runtime
-      - HOME=/home/naisr  # Set HOME for the user
+      - HOME=/home/jobe  # Set HOME for the user
     tty: true
     stdin_open: true
