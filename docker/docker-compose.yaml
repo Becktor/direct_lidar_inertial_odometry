@@ -13,7 +13,7 @@ services:
     volumes:
       - ../:/naisr2_ws/src/direct_lidar_inertial_odometry  # Mount the repo at runtime
       - /tmp/.X11-unix:/tmp/.X11-unix  # For RViz GUI
-      - /home/jobe/bags:/data/slam_data  # For data storage
+      - /data/slam_data:/data/slam_data  # For data storage
       - ./tmux.conf:/home/jobe/.tmux.conf  # Custom tmux config
     environment:
       - DISPLAY=${DISPLAY}  # Pass host display for RViz

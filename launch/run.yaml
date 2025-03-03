@@ -6,8 +6,6 @@ windows:
       - source /opt/ros/jazzy/setup.bash
       - source /naisr2_ws/install/setup.bash
       - export ROS_DOMAIN_ID=0
-      - export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-      - ros2 param set /use_sim_time true
     panes:
       - shell_command:
           - ros2 launch direct_lidar_inertial_odometry dlio.launch.py rviz:=true pointcloud_topic:=/os_cloud_node/points imu_topic:=/os_cloud_node/imu
@@ -15,7 +13,9 @@ windows:
           - htop
       - shell_command:
           #- ros2 bag play /data/slam_data/ros2/ox-quad-m --clock
-          - ros2 bag play /data/slam_data/ros2/ox-stair --clock
+          #- ros2 bag play /data/slam_data/ros2/ox-stair --clock
+          # - ros2 bag play /data/slam_data/ros2/os1_128_01_rs --clock
+            - ros2 bag play /data/slam_data/ros2/jsu_long --clock
           #- ros2 bag play /data/slam_data/ros2/jsu-short --clock
       - shell_command:
           - echo "Run your commands here"

@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     tmux \
     tmuxp \
+    htop \
     python3-colcon-common-extensions \
     python3-colcon-clean \
     python3-rosdep \
@@ -56,9 +57,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     rosdep install --from-paths src --ignore-src -r -y"
 
 # Build the workspace with colcon cache
-RUN --mount=type=cache,target=/naisr2_ws/build,sharing=locked \
-    /bin/bash -c "source /opt/ros/jazzy/setup.bash && \
-    colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+
+#RUN --mount=type=cache,target=/naisr2_ws/build,sharing=locked \
+    #/bin/bash -c "source /opt/ros/jazzy/setup.bash && \
+    #colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo"
 
 # clear the workspace since we will mount it as a volume
 RUN rm -rf /naisr2_ws/src/direct_lidar_inertial_odometry
@@ -85,3 +87,4 @@ USER ${USERNAME}
 RUN echo "source /opt/ros/jazzy/setup.bash" >> /home/${USERNAME}/.bashrc
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
+
