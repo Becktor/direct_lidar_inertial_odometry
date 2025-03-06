@@ -52,8 +52,8 @@ dlio::OdomNode::OdomNode() : Node("dlio_odom_node") {
   this->deskewed_pub = this->create_publisher<sensor_msgs::msg::PointCloud2>("deskewed", 1);
 
   this->br = std::make_shared<tf2_ros::TransformBroadcaster>(*this);
-
-  this->publish_timer = this->create_wall_timer(std::chrono::duration<double>(0.01), 
+  // Timer for odometry. not tied to anything?
+  this->publish_timer = this->create_wall_timer(std::chrono::duration<double>(0.05), 
       std::bind(&dlio::OdomNode::publishPose, this));
 
   this->T = Eigen::Matrix4f::Identity();
@@ -203,9 +203,13 @@ void dlio::OdomNode::getParams() {
   dlio::declare_param(this, "odom/keyframe/threshR", this->keyframe_thresh_rot_, 1.0);
 
   // Submap
+  // what does knn do
   dlio::declare_param(this, "odom/submap/keyframe/knn", this->submap_knn_, 10);
+  // what does kcv do
   dlio::declare_param(this, "odom/submap/keyframe/kcv", this->submap_kcv_, 10);
+  // what does kcc do
   dlio::declare_param(this, "odom/submap/keyframe/kcc", this->submap_kcc_, 10);
+
 
   // Dense map resolution
   dlio::declare_param(this, "map/dense/filtered", this->densemap_filtered_, true);
@@ -223,6 +227,8 @@ void dlio::OdomNode::getParams() {
   // Adaptive Parameters
   dlio::declare_param(this, "adaptive", this->adaptive_params_, true);
 
+  // Add Missing parameters.
+  //
   // Extrinsics
   std::vector<double> t_default{0., 0., 0.};
   std::vector<double> R_default{1., 0., 0., 0., 1., 0., 0., 0., 1.};
@@ -317,10 +323,7 @@ void dlio::OdomNode::start() {
   std::cout << "+-------------------------------------------------------------------+" << std::endl;
 
 }
-
-void dlio::OdomNode::publishPose() {
-
-  // nav_msgs::msg::Odometry
+void dlio::OdomNode::createOdomMsg(){
   this->odom_ros.header.stamp = this->imu_stamp;
   this->odom_ros.header.frame_id = this->odom_frame;
   this->odom_ros.child_frame_id = this->baselink_frame;
@@ -342,6 +345,12 @@ void dlio::OdomNode::publishPose() {
   this->odom_ros.twist.twist.angular.y = this->state.v.ang.b[1];
   this->odom_ros.twist.twist.angular.z = this->state.v.ang.b[2];
 
+
+}
+void dlio::OdomNode::publishPose() {
+
+  // nav_msgs::msg::Odometry
+  this->createOdomMsg();
   this->odom_pub->publish(this->odom_ros);
 
   // geometry_msgs::msg::PoseStamped
@@ -362,8 +371,11 @@ void dlio::OdomNode::publishPose() {
 }
 
 void dlio::OdomNode::publishToROS(pcl::PointCloud<PointType>::ConstPtr published_cloud, Eigen::Matrix4f T_cloud) {
+  //publish pointcloud descewed?
   this->publishCloud(published_cloud, T_cloud);
-
+  // publish at lidar rate
+  // this->createOdomMsg();
+  // this->lidar_odo_pub->publish(this->odom_ros)
   // nav_msgs::msg::Path
   this->path_ros.header.stamp = this->imu_stamp;
   this->path_ros.header.frame_id = this->odom_frame;
@@ -1378,7 +1390,10 @@ sensor_msgs::msg::Imu::SharedPtr dlio::OdomNode::transformImu(const sensor_msgs:
   prev_stamp = imu_stamp_secs;
   
   if (dt == 0) { dt = 1.0/200.0; }
-
+// if (dt == 0){
+//    ROS_FATAL("IMU timestamp difference is zero. Using rough estimate for dt.");
+//    dt=this->rough_dt;
+//  }
   // Transform angular velocity (will be the same on a rigid body, so just rotate to ROS convention)
   Eigen::Vector3f ang_vel(imu_raw->angular_velocity.x,
                           imu_raw->angular_velocity.y,
@@ -1587,7 +1602,6 @@ void dlio::OdomNode::updateKeyframes() {
   double theta_rad = 2. * atan2(sqrt( pow(dq.x(), 2) + pow(dq.y(), 2) + pow(dq.z(), 2) ), dq.w());
   double theta_deg = theta_rad * (180.0/M_PI);
 
-  // update keyframes
   bool newKeyframe = false;
 
   if (abs(dd) > this->keyframe_thresh_dist_ || abs(theta_deg) > this->keyframe_thresh_rot_) {

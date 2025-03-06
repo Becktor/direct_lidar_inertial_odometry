@@ -2,7 +2,7 @@
 set -e
 
 # Default username (must match Dockerfile)
-USERNAME="jobe"
+USERNAME="${USERNAME}"
 
 # Ensure GID is provided via environment variables
 if [ -z "$USER_GID" ]; then

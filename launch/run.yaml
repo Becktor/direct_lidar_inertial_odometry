@@ -12,10 +12,10 @@ windows:
       - shell_command:
           - htop
       - shell_command:
-          #- ros2 bag play /data/slam_data/ros2/ox-quad-m --clock
+          - ros2 bag play /data/slam_data/ros2/ox-quad-m --clock
           #- ros2 bag play /data/slam_data/ros2/ox-stair --clock
-          # - ros2 bag play /data/slam_data/ros2/os1_128_01_rs --clock
-            - ros2 bag play /data/slam_data/ros2/jsu_long --clock
+        #- ros2 bag play /data/slam_data/ros2/os1_128_01_rs --clock
+          #- ros2 bag play /data/slam_data/ros2/jsu_long --clock
           #- ros2 bag play /data/slam_data/ros2/jsu-short --clock
       - shell_command:
           - echo "Run your commands here"
